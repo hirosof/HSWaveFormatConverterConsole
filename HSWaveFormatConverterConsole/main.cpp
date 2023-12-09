@@ -123,7 +123,7 @@ int OpenAfterProcess ( CHSWaveReaderW &cReader  , std::wstring  baseFilePath) {
 
 	if ( cReader.HasListChunk( "INFO" ) ) {
 
-		printf( "\n<<変換元メタデータ>>\n" );
+		printf( "\n<<変換元WAVEァイルのメタデータ(INFO型LISTチャンクデータ>>\n" );
 
 		CHSRiffChunkTable table;
 
