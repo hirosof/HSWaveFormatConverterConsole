@@ -29,4 +29,20 @@ int HSScanRiffChunkTable ( char * lpChunkName , CHSRiffChunkTable * pTable ){
 	return -1;
 }
 
+std::string HSGetListInfoChunkMemberDescription( char* lpChunkName ) {
+
+
+	std::string name;
+	if ( HSMakeRiffChunkFourCC( lpChunkName, &name ) == false )  return std::string( );
+
+
+	auto it = HSRIFF_LISTINFOCHUNK_MEMBER_DESCRIPTION_MAP.find( name ) ;
+
+	if ( it != HSRIFF_LISTINFOCHUNK_MEMBER_DESCRIPTION_MAP.end( ) ) {
+		return it->second;
+	}
+
+	return std::string( );
+}
+
 

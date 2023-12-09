@@ -120,6 +120,39 @@ int OpenAfterProcess ( CHSWaveReaderW &cReader  , std::wstring  baseFilePath) {
 	printf ( "\n<<変換元フォーマット情報>>\n" );
 	HSShowFormat ( inFormat );
 
+
+	if ( cReader.HasListChunk( "INFO" ) ) {
+
+		printf( "\n<<変換元メタデータ>>\n" );
+
+		CHSRiffChunkTable table;
+
+		if ( cReader.GetListChunkMemberTable( "INFO", &table ) ) {
+			std::string desc;
+			char name[5];
+			name[4] = 0;
+
+			for ( auto it = table.cbegin( ); it != table.cend( ); it++ ) {
+				memcpy( name, it->Header.Name, 4 );
+
+				desc = HSGetListInfoChunkMemberDescription( name );
+				if ( desc.length( ) == 0 ) desc = name;
+
+				char* pdata = new char[it->Header.DataSize + 1];
+				*( pdata + it->Header.DataSize ) = 0;
+
+				if ( cReader.ReadListChunkMemberData( "INFO", name, pdata, 0, it->Header.DataSize ) > 0 ) {
+					printf( "%s (%s) : %s\n", name, desc.c_str( ), pdata );
+				}
+				
+				delete[]pdata;
+			}
+			printf( "\n" );
+		}
+
+	}
+
+
 	printf ( "変換先(保存先)のWAVEファイルを指定してください。\n" );
 	std::wstring TargetWaveFilePath;
 
@@ -138,7 +171,7 @@ int OpenAfterProcess ( CHSWaveReaderW &cReader  , std::wstring  baseFilePath) {
 		printf ( "ファイル指定がキャンセルされたかエラーが発生しました。\n" );
 		return -4;
 	}
-	wprintf ( L"変換先：%s\n" , TargetWaveFilePath.c_str ( ) );
+	wprintf ( L"変換先：%s\n\n" , TargetWaveFilePath.c_str ( ) );
 
 
 
@@ -160,8 +193,9 @@ int OpenAfterProcess ( CHSWaveReaderW &cReader  , std::wstring  baseFilePath) {
 
 		printf ( "上記のフォーマットへの変換でよろしいですか？(Y/N)：" );
 
+		checkText[0] = 0;
 		scanf_s ( "%[^\n]" , checkText , 32 );
-		getchar ( );
+		(void)getchar ( );
 
 		if ( ( checkText [ 0 ] == 'N' ) || ( checkText [ 0 ] == 'n' ) ) {
 			printf ( "再指定してください。\n" );
@@ -321,23 +355,6 @@ bool ConvertProcess ( CHSWaveReaderW &cReader , CHSWaveWriterW &cWriter ,
 	}
 	DWORD et = timeGetTime ( );
 
-	printf ( "\n処理が終わりました。(処理時間：%u ミリ秒)\n" , et - st );
-
-
-	printf( "\n<<処理結果>>\n" );
-
-	/*
-		printf( "処理元サンプル数：%u\n処理先サンプル数：%u\n\n", inputSamples, outSamples );
-		printf( "処理元再生時間：%S\n処理先再生時間：%S\n\n",
-			MilisecondsToString( static_cast<uint32_t>( inputSamples * 1000.0 / inFormat.nSamplesPerSec ) ).c_str( ),
-			MilisecondsToString( static_cast<uint32_t>( outSamples * 1000.0 / outFormat.nSamplesPerSec ) ).c_str( ) );
-	*/
-	printf( "サンプル数\n\t処理元：%u\n\t処理先：%u\n\n", inputSamples, outSamples );
-	printf( "再生時間\n\t処理元：%S\n\t処理先：%S\n\n",
-		MilisecondsToString( static_cast<uint32_t>( inputSamples * 1000.0 / inFormat.nSamplesPerSec ) ).c_str( ),
-		MilisecondsToString( static_cast<uint32_t>( outSamples * 1000.0 / outFormat.nSamplesPerSec ) ).c_str( ) );
-
-
 	cWriter.EndDataChunk ( );
 	for ( int i = 0; i < 3; i++ ) {
 		input_norm [ i ].Free ( );
@@ -347,6 +364,16 @@ bool ConvertProcess ( CHSWaveReaderW &cReader , CHSWaveWriterW &cWriter ,
 	output_norm.Free ( );
 	saveData.Free ( );
 	
+	printf( "\n処理が終わりました。\n" );
+	
+	printf( "\n<<処理結果>>\n" );
+
+	printf( "処理時間\n\t%S\n\n", MilisecondsToString( et - st ).c_str() );
+	printf( "サンプル数\n\t処理元：%u\n\t処理先：%u\n\n", inputSamples, outSamples );
+	printf( "再生時間\n\t処理元：%S\n\t処理先：%S\n\n",
+		MilisecondsToString( static_cast<uint32_t>( inputSamples * 1000.0 / inFormat.nSamplesPerSec ) ).c_str( ),
+		MilisecondsToString( static_cast<uint32_t>( outSamples * 1000.0 / outFormat.nSamplesPerSec ) ).c_str( ) );
+
 	return true;
 }
 

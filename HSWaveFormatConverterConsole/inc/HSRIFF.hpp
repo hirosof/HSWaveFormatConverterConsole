@@ -38,6 +38,30 @@
 #define HSRIFF_FOURCC_LIST_INFO_ISBJ "ISBJ" //タイトル
 #define HSRIFF_FOURCC_LIST_INFO_ITRK "ITRK" //トラック番号
 
+
+/*
+	INFO型LISTチャンクメンバーの識別子と説明の連想配列定義部
+*/
+
+const std::map<std::string, std::string>  HSRIFF_LISTINFOCHUNK_MEMBER_DESCRIPTION_MAP= {
+	{HSRIFF_FOURCC_LIST_INFO_ISRC,"メディア元"},
+	{HSRIFF_FOURCC_LIST_INFO_ICRD,"作成日"},
+	{HSRIFF_FOURCC_LIST_INFO_IPRD,"アルバム名"},
+	{HSRIFF_FOURCC_LIST_INFO_INAM,"曲名"},
+	{HSRIFF_FOURCC_LIST_INFO_IGNR,"ジャンル"},
+	{HSRIFF_FOURCC_LIST_INFO_ICMT,"コメント"},
+	{HSRIFF_FOURCC_LIST_INFO_IART,"アーティスト"},
+	{HSRIFF_FOURCC_LIST_INFO_ICMS,"著作権代理人"},
+	{HSRIFF_FOURCC_LIST_INFO_ICOP,"著作権情報"},
+	{HSRIFF_FOURCC_LIST_INFO_IENG,"録音エンジニア"},
+	{HSRIFF_FOURCC_LIST_INFO_ISFT,"ソフトウェア"},
+	{HSRIFF_FOURCC_LIST_INFO_IKEY,"キーワード"},
+	{HSRIFF_FOURCC_LIST_INFO_ITCH,"エンコード技術者"},
+	{HSRIFF_FOURCC_LIST_INFO_ISBJ,"タイトル"},
+	{HSRIFF_FOURCC_LIST_INFO_ITRK,"トラック番号"},
+};
+
+
 /*
 	グローバル変数(定数)定義部
 */
@@ -68,6 +92,10 @@ using CHSListChunkTable = std::map<std::string , CHSRiffChunkTable>;
 
 bool HSMakeRiffChunkFourCC( char *lpChunkBaseName , std::string *lpChunkFourCC );
 int HSScanRiffChunkTable ( char *lpChunkName , CHSRiffChunkTable *pTable );
+
+std::string HSGetListInfoChunkMemberDescription( char* lpChunkName );
+
+
 
 template <typename Type> class __CHSRiffReaderBaseTemplate {
 protected:
